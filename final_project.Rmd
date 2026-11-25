@@ -1,0 +1,42 @@
+---
+title: "Tumour-Associated Gene Expression in Lung Adenocarcinoma, Accounting for Smoking
+  Status"
+author: "Zahra Alizada, Mengchu Shi"
+date: "2026-11-25"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{}
+```
+
+## Plan
+
+1. Load the data. Then pull out the three pieces: exprs() for the expression matrix, pData() for the sample information and fData() for the probe annotation.
+
+2. Tidy the sample table. Make clean columns for tissue (tumour / non-tumour) and smoking status. Then use table() to count samples per group. The GEO columns have messy names like characteristics_ch1, so this step takes longer than you'd expect.
+
+3. Check the data quality. Make a boxplot of each sample's expression values to see whether they're on a similar scale. Also check whether the values are already log2: if the maximum is in the thousands they aren't, and you should apply log2().
+
+4. Filter and annotate probes. Remove probes with very low expression. Map the probe IDs to gene symbols using the "Gene Symbol" column in fData(). Some genes have several probes, so decide on one rule, such as keeping the probe with the highest average expression.
+
+5. PCA for an overview. Run prcomp(t(expr)), then plot PC1 vs PC2 in ggplot, coloured by tissue and shaped by smoking status. You'd expect tumour and non-tumour samples to separate. If they do, that's a nice first figure.
+
+6. Differential expression with limma.
+Call a gene significant if its adjusted p-value is below 0.05 and its fold change is at least 2 (|logFC| > 1).
+The coef name depends on how you label your factor levels. Check it with colnames(design).
+
+7. Results figures.
+- A volcano plot in ggplot.
+- A heatmap of the top 50 genes using pheatmap, with samples annotated by tissue.
+- Boxplots of 3–4 top genes by tissue.
+Compare with the paper. Do the top genes overlap with the ones the authors reported? 
